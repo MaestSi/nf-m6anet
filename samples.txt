@@ -1,0 +1,2 @@
+sample	condition	fast5_dir	fastq
+Test	WT	/path/to/fast_dir	/path/to/file.fastq
