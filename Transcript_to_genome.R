@@ -85,8 +85,8 @@ Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, 
       
       df_m6anet$Status <- m6anet[rownames(df_m6anet), 4]
       df_m6anet$Prob_Mod <- m6anet[rownames(df_m6anet), 5]
-      df_m6anet_final <- df_m6anet[, c(1, 2, 3, 4, 8, 9)]
-      colnames(df_m6anet_final) <- c("Chr", "Start", "End", "Strand", "Status", "Prob_mod")
+      df_m6anet_final <- df_m6anet[, c(1, 2, 3, 5, 9, 4)]
+      colnames(df_m6anet_final) <- c("Chr", "Start", "End", "Transcript_id", "Prob_mod", "Strand")
       write.table(df_m6anet_final, file = output_file_genome, quote = F, sep = "\t", row.names = F)
       return(df_m6anet_final)
     } else {
