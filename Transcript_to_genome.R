@@ -15,7 +15,7 @@ library(stringr)
 library(Biostrings)
 library(parallel)
 
-Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, output_file_genome) {
+Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, output_file_genome, mccores) {
   if (file.exists(input_file) && file.info(input_file)$size != 0) {
     data_m6anet <- read.table(input_file, header = TRUE, sep=",") 
     m6anet <- data.frame("TranscriptID" = data_m6anet[,1],
@@ -92,4 +92,4 @@ Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, 
   else {message(paste0(tool,"'s output files don't exist."))}
 }
 
-Filtered_m6anet <- Lift_over_m6anet(input_file, prob_mod_thr, genome_gtf, output_file, output_file_genome)
+Filtered_m6anet <- Lift_over_m6anet(input_file, prob_mod_thr, genome_gtf, output_file, output_file_genome, mccores)
