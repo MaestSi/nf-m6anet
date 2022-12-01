@@ -15,7 +15,7 @@ library(stringr)
 library(Biostrings)
 library(parallel)
 
-Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file) {
+Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, output_file_genome) {
   if (file.exists(input_file) && file.info(input_file)$size != 0) {
     data_m6anet <- read.table(input_file, header = TRUE, sep=",") 
     m6anet <- data.frame("TranscriptID" = data_m6anet[,1],
@@ -26,6 +26,7 @@ Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file) 
     )
     m6anet$Status <- ifelse(!is.nan(m6anet$Status) & !is.na(m6anet$Status) & m6anet$Status > as.numeric(prob_mod_thr), "Mod", "Unmod")
     m6anet <- m6anet[which(m6anet$Status == "Mod"), ]
+    write.table(m6anet, file = output_file, quote = F, sep = "\t", row.names = F)
     # Creation Edb Database from genome GTF
     EnsDb <- suppressWarnings(suppressMessages(ensDbFromGtf(gtf = genome_gtf)))
     edb <- EnsDb(EnsDb)
@@ -85,10 +86,10 @@ Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file) 
     df_m6anet$Prob_Mod <- m6anet[rownames(df_m6anet), 5]
     df_m6anet_final <- df_m6anet[, c(1, 2, 3, 4, 8, 9)]
     colnames(df_m6anet_final) <- c("Chr", "Start", "End", "Strand", "Status", "Prob_mod")
-    write.table(df_m6anet_final, file = output_file, quote = F, sep = "\t", row.names = F)
+    write.table(df_m6anet_final, file = output_file_genome, quote = F, sep = "\t", row.names = F)
     return(df_m6anet_final)
   }
   else {message(paste0(tool,"'s output files don't exist."))}
 }
 
-Filtered_m6anet <- Lift_over_m6anet(input_file, prob_mod_thr, genome_gtf, output_file)
+Filtered_m6anet <- Lift_over_m6anet(input_file, prob_mod_thr, genome_gtf, output_file, output_file_genome)

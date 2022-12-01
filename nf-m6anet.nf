@@ -128,7 +128,7 @@ process m6anet1 {
     """
 		mkdir -p ${params.resultsDir}/${condition}/${sample}/m6anet/
 
-		m6anet-dataprep --eventalign  ${params.resultsDir}/${condition}/${sample}/nanopolish/transcriptome/eventalign_readIndex.txt \
+		m6anet-dataprep --eventalign  ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt \
                 --out_dir ${params.resultsDir}/${condition}/${sample}/m6anet --n_processes ${task.cpus}
 	"""
 	else
@@ -180,7 +180,8 @@ process postprocessing {
 
 		Rscript ${params.postprocessingScript} \
 		input_file=${params.resultsDir}/m6anet/${condition}/data.result.csv \
-		output_file=${params.resultsDir}/m6anet_postprocessing/${condition}/data.result.genome.thr${prob_mod_thr}.tsv \
+		output_file=${params.resultsDir}/m6anet_postprocessing/${condition}/data.result.thr${prob_mod_thr}.tsv \
+		output_file_genome=${params.resultsDir}/m6anet_postprocessing/${condition}/data.result.genome.thr${prob_mod_thr}.tsv \
 		genome_gtf=${params.gtf} \
 		resultsFolder=${params.resultsDir}/m6anet_postprocessing/${condition} \
 		mccores=${task.cpus} \
