@@ -16,7 +16,7 @@ def helpMessage() {
 
 	Mandatory argument:
 	-profile                                                 Configuration profile to use. Available: docker, singularity
-	Other mandatory arguments which may be specified in the pipeline.conf file
+	Other mandatory arguments which may be specified in the nf-m6anet.conf file
 
 	--samples                                                Path to the tab-separated sample file including sample name, condition, path to fast5 folder and path to fastq file
 	--resultsDir                                             Path to a folder where to store results
