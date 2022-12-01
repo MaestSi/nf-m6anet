@@ -1,5 +1,5 @@
 # nf-m6anet
-**nf-m6anet** is a [Nextflow](https://www.nextflow.io) pipeline for m6A detection from Nanopore direct RNA-seq data based on [m6anet](https://github.com/GoekeLab/m6anet). Starting from raw fast5 and fastq files, it aligns the sequencing reads to the transcriptome with [minimap2](https://github.com/lh3/minimap2), performs resquiggling with [Nanopolish](https://github.com/jts/nanopolish) and runs [m6anet](https://github.com/GoekeLab/m6anet) for m6A detection. It then filters high-quality m6A+ sites and performs lift-over of the transcriptome-based to genome-based coordinates.
+**nf-m6anet** is a [Nextflow](https://www.nextflow.io) pipeline for m6A detection from Nanopore direct RNA-seq data based on [m6anet](https://github.com/GoekeLab/m6anet). Starting from raw fast5 and fastq files, it aligns the sequencing reads to the transcriptome with [minimap2](https://github.com/lh3/minimap2), performs resquiggling with [Nanopolish](https://github.com/jts/nanopolish) and runs [m6anet](https://github.com/GoekeLab/m6anet) for m6A detection. It then filters high-quality m6A+ sites and performs lift-over of transcriptome-based to genome-based coordinates.
 
 ## Getting started
 
