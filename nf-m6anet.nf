@@ -152,8 +152,8 @@ process m6anet2 {
 	script:
 	if(params.m6anet2)
 	"""
-		mkdir -p ${params.resultsDir}/m6anet
-		preprocessing_dirs=\$(find ${params.resultsDir}/${condition} -maxdepth 2 -type d | grep "m6anet\$")
+		mkdir -p ${params.resultsDir}/${condition}/m6anet
+		preprocessing_dirs=\$(find ${params.resultsDir}/${condition} -maxdepth 2 -mindepth 2 -type d | grep "m6anet\$")
 		m6anet-run_inference --input_dir \$preprocessing_dirs --out_dir ${params.resultsDir}/${condition}/m6anet --infer_mod_rate --n_processes ${task.cpus}
 	
 		zcat ${params.resultsDir}/${condition}/m6anet/data.result.csv.gz > ${params.resultsDir}/${condition}/m6anet/data.result.csv
@@ -182,15 +182,12 @@ process postprocessing {
 		output_file=${params.resultsDir}/${condition}/m6anet_postprocessing/data.result.thr${params.prob_mod_thr}.tsv \
 		output_file_genome=${params.resultsDir}/${condition}/m6anet_postprocessing/data.result.genome.thr${params.prob_mod_thr}.tsv \
 		genome_gtf=${params.gtf} \
-		resultsFolder=${params.resultsDir}/${condition}/m6anet_postprocessing/ \
 		mccores=${task.cpus} \
 		prob_mod_thr=${params.prob_mod_thr}
 
 		Rscript ${params.bulkLevelScript} \
-		input_file=${params.resultsDir}/${condition}/m6anet/data.result.csv \
-		prob_mod_thr=${params.prob_mod_thr} \
-		genome_gtf${params.gtf} \
-		output_file=${params.resultsDir}/${condition}/m6anet_postprocessing/m6A_bulk_level_estimate.txt
+		m6anet_output_file=${params.resultsDir}/${condition}/m6anet/data.result.csv \
+		report_file=${params.resultsDir}/${condition}/m6anet_postprocessing/m6A_bulk_level_estimate.txt
 
 	"""
 	else
