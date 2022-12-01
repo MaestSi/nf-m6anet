@@ -16,6 +16,13 @@ cd nf-m6anet
 chmod 755 *
 ```
 
+## Overview
+
+<p align="center">
+  <img src="Figures/nf-m6anet_pipeline_flowchart.png" alt="drawing" width="900" title="nf-m6anet_pipeline_flowchart">
+</p>
+
+
 ## Usage
 
 The nf-m6anet pipeline requires you to open nf-m6anet.conf configuration file and set the desired options. Then, you can run the pipeline using either docker or singularity environments just specifying a value for the -profile variable.
