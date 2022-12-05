@@ -103,7 +103,7 @@ process nanopolish {
         	nanopolish index -d ${fast5_dir} ${fastq}
         fi
 
-        nanopolish eventalign --reads ${fastq} --bam ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam --genome transcriptome.fa --samples --signal-index --scale-events -n --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt --threads ${task.cpus} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readName.txt
+        	nanopolish eventalign --reads ${fastq} --bam ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam --genome transcriptome.fa --samples --signal-index --scale-events -n --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt --threads ${task.cpus} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readName.txt
 
 		nanopolish eventalign --reads ${fastq} --bam ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam --genome transcriptome.fa --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt --threads ${task.cpus} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt
 	"""
