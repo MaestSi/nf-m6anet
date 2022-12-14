@@ -22,13 +22,13 @@ RUN apt-get update  && \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-RUN conda install -c bioconda nanopolish minimap2 samtools python==3.8
+RUN conda install -c bioconda f5c minimap2 samtools python==3.8
 RUN R -e "install.packages('xml2')"
 RUN R -e "install.packages('BiocManager')"
 RUN R -e "BiocManager::install('IRanges')"  
 RUN R -e "BiocManager::install('GenomicRanges')" 
 RUN R -e "BiocManager::install('ensembldb')"
 
-RUN git clone -b read_id https://github.com/GoekeLab/m6anet.git \
+RUN git clone https://github.com/GoekeLab/m6anet.git \
 && cd m6anet \
 && python setup.py install
