@@ -29,6 +29,6 @@ RUN R -e "BiocManager::install('IRanges')"
 RUN R -e "BiocManager::install('GenomicRanges')" 
 RUN R -e "BiocManager::install('ensembldb')"
 
-RUN git clone https://github.com/GoekeLab/m6anet.git \
+RUN git clone -b development https://github.com/GoekeLab/m6anet.git \
 && cd m6anet \
 && python setup.py install

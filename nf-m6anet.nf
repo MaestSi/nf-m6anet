@@ -88,15 +88,14 @@ process nanopolish {
     if(params.nanopolish)
 	"""
 		mkdir -p ${params.resultsDir}/${condition}/${sample}/nanopolish/
-		seqsum_file=${fast5_dir}/sequencing_summary.txt
+		seqsum_file=\$(dirname ${fast5_dir})/sequencing_summary.txt
 
         	if [[ -f "\$seqsum_file" ]]; then
 			f5c index -d ${fast5_dir} ${fastq} -s \$seqsum_file
 		else
 			f5c index -d ${fast5_dir} ${fastq}
         	fi
-		#f5c eventalign --rna -r ${fastq} -b ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam -g transcriptome.fa --samples --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt -t ${task.cpus} --print-read-names > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readName.txt
-		f5c eventalign --rna -r ${fastq} -b ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam -g transcriptome.fa --samples --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt -t ${task.cpus} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt
+		f5c eventalign --rna -r ${fastq} -b ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam -g transcriptome.fa --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt -t ${task.cpus} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt
 	"""
 	else
 	"""
