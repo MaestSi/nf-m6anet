@@ -31,7 +31,7 @@ Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, 
       # Creation Edb Database from genome GTF
       EnsDb <- suppressWarnings(suppressMessages(ensDbFromGtf(gtf = genome_gtf)))
       edb <- EnsDb(EnsDb)
-      # Lift-over + output bed
+      ## Lift-over + output bed
       test_m6anet <- IRanges(start = m6anet[,2], end = m6anet[,3], names = c(m6anet[,1]))
       num_rows_chunk <- 1
       mc.cores <- as.numeric(mccores)
@@ -40,7 +40,18 @@ Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, 
       } else {
         test_m6anet_split <- split(test_m6anet, rep(seq(from = 1, to = ceiling(length(test_m6anet)/num_rows_chunk)), each = num_rows_chunk)[1:length(test_m6anet)])
       }
-      
+      #remove tx version
+      test_m6anet_split <- lapply(test_m6anet_split, function(x) { names(x) = gsub(x = names(x), pattern = "\\.\\d*", replacement = ""); return(x)})
+      #remove tx not available in the gtf file
+      txdb <- makeTxDbFromGFF(file = genome_gtf, format = "auto")
+      tx_from_txdb <- mcols(GenomicFeatures::transcripts(txdb))$tx_name
+      unannotated_tx <- setdiff(unlist(lapply(test_m6anet_split, names)), tx_from_txdb)
+      if (length(unannotated_tx) > 0) {
+        unannotated_tx_ind <- which(unlist(lapply(test_m6anet_split, function(x) names(x) %in% unannotated_tx)))
+        test_m6anet_split <- test_m6anet_split[-unannotated_tx_ind]
+        names(test_m6anet_split) <- 1:length(test_m6anet_split)
+      }
+      #perform lift-over
       tmp1 <- vector(mode = "list", length = length(test_m6anet_split))
       names(tmp1) <- 1:length(test_m6anet_split)
       tmp <- vector(mode = "list", length = length(test_m6anet_split))
@@ -61,8 +72,18 @@ Lift_over_m6anet <- function(input_file, prob_mod_thr, genome_gtf, output_file, 
             return(NULL)
           }
           )}, mc.cores = mc.cores)
-        ind_retry <- names(which(unlist(lapply(tmp1, function(x) is.null(x)))))
-        ind_ok <- names(which(unlist(lapply(tmp1, function(x) !is.null(x)))))
+        ind_retry_tmp <- unlist(lapply(tmp1, function(x) is.null(x)))
+        if (length(ind_retry_tmp) > 0) {
+          ind_retry <- names(which(ind_retry_tmp))
+        } else {
+          ind_retry <- c()  
+        }
+        ind_ok_tmp <- unlist(lapply(tmp1, function(x) !is.null(x)))
+        if (length(ind_ok_tmp) > 0) {
+          ind_ok <- names(which(ind_ok_tmp))
+        } else {
+          ind_ok <- c() 
+        }
         tmp[ind_ok] <- tmp1[ind_ok]
         if (length(ind_retry) > 0) {
           tmp1 <- tmp1[ind_retry]
