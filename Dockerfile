@@ -31,6 +31,10 @@ RUN R -e "BiocManager::install('ensembldb')"
 
 ENV PATH=/opt/conda/bin/:$PATH
 
+RUN git clone https://github.com/hasindu2008/f5c.git
+RUN /f5c/scripts/install-vbz.sh
+ENV HDF5_PLUGIN_PATH=/root/.local/hdf5/lib/plugin 
+
 RUN git clone -b development https://github.com/GoekeLab/m6anet.git \
 && cd m6anet \
 && python setup.py install
