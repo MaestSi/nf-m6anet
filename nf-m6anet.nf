@@ -117,7 +117,7 @@ process m6anet1 {
 	if(params.m6anet1)
 	"""
 		mkdir -p ${params.resultsDir}/${condition}/${sample}/m6anet/
-		m6anet-dataprep --eventalign  ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt \
+		m6anet dataprep --eventalign  ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt \
 		--out_dir ${params.resultsDir}/${condition}/${sample}/m6anet --n_processes ${task.cpus}
 	"""
 	else
@@ -143,7 +143,7 @@ process m6anet2 {
 	"""
 		mkdir -p ${params.resultsDir}/${condition}/m6anet
 		preprocessing_dirs=\$(find ${params.resultsDir}/${condition} -maxdepth 2 -mindepth 2 -type d | grep "m6anet\$")
-		m6anet-run_inference --input_dir \$preprocessing_dirs --out_dir ${params.resultsDir}/${condition}/m6anet --infer_mod_rate --n_processes ${task.cpus}
+		m6anet inference --input_dir \$preprocessing_dirs --out_dir ${params.resultsDir}/${condition}/m6anet --n_processes ${task.cpus}
 		zcat ${params.resultsDir}/${condition}/m6anet/data.result.csv.gz > ${params.resultsDir}/${condition}/m6anet/data.result.csv
 	"""
 	else
