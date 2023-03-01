@@ -144,7 +144,6 @@ process m6anet2 {
 		mkdir -p ${params.resultsDir}/${condition}/m6anet
 		preprocessing_dirs=\$(find ${params.resultsDir}/${condition} -maxdepth 2 -mindepth 2 -type d | grep "m6anet\$")
 		m6anet inference --input_dir \$preprocessing_dirs --out_dir ${params.resultsDir}/${condition}/m6anet --n_processes ${task.cpus}
-		zcat ${params.resultsDir}/${condition}/m6anet/data.result.csv.gz > ${params.resultsDir}/${condition}/m6anet/data.result.csv
 	"""
 	else
 	"""
@@ -166,15 +165,15 @@ process postprocessing {
 		mkdir -p ${params.resultsDir}/${condition}/m6anet_postprocessing
 
 		Rscript ${params.postprocessingScript} \
-			input_file=${params.resultsDir}/${condition}/m6anet/data.result.csv \
-			output_file=${params.resultsDir}/${condition}/m6anet_postprocessing/data.result.thr${params.prob_mod_thr}.tsv \
-			output_file_genome=${params.resultsDir}/${condition}/m6anet_postprocessing/data.result.genome.thr${params.prob_mod_thr}.tsv \
+			input_file=${params.resultsDir}/${condition}/m6anet/data.site_proba.csv \
+			output_file=${params.resultsDir}/${condition}/m6anet_postprocessing/data.site_proba.thr${params.prob_mod_thr}.tsv \
+			output_file_genome=${params.resultsDir}/${condition}/m6anet_postprocessing/data.site_proba.genome.thr${params.prob_mod_thr}.tsv \
 			genome_gtf=${params.gtf} \
 			mccores=${task.cpus} \
 			prob_mod_thr=${params.prob_mod_thr}
 
 		Rscript ${params.bulkLevelScript} \
-			m6anet_output_file=${params.resultsDir}/${condition}/m6anet/data.result.csv \
+			m6anet_output_file=${params.resultsDir}/${condition}/m6anet/data.site_proba.csv \
 			report_file=${params.resultsDir}/${condition}/m6anet_postprocessing/m6A_bulk_level_estimate.txt
 
 	"""
