@@ -174,8 +174,8 @@ process postprocessing {
 
 		Rscript ${params.bulkLevelScript} \
 			m6anet_output_file=${params.resultsDir}/${condition}/m6anet/data.site_proba.csv \
-			report_file=${params.resultsDir}/${condition}/m6anet_postprocessing/m6A_bulk_level_estimate.txt
-
+			report_file=${params.resultsDir}/${condition}/m6anet_postprocessing/m6A_bulk_level_estimate.txt \
+			prob_mod_thr=${params.prob_mod_thr}
 	"""
 	else
 	"""
