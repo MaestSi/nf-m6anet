@@ -39,6 +39,7 @@ Other mandatory arguments which may be specified in the nf-m6anet.conf file
 --resultsDir                                             Path to a folder where to store results
 --transcriptome_fasta                                    Path to the transcriptome fasta file
 --gtf                                                    Path to genome annotation gtf file
+--min_mapq                                               Minimum mapping quality
 --prob_mod_thr                                           Probability modification threshold for calling a site as m6A+
 --postprocessingScript                                   Path to Transcript_to_genome.R script
 --bulkLevelScript                                        Path to Calculate_m6anet_bulk.R script
