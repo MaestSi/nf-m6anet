@@ -22,6 +22,7 @@ def helpMessage() {
 	--resultsDir                                             Path to a folder where to store results
 	--transcriptome_fasta                                    Path to the transcriptome fasta file
 	--gtf                                                    Path to genome annotation gtf file
+	--min_mapq                                               Minimum mapping quality
 	--prob_mod_thr                                           Probability modification threshold for calling a site as m6A+
 	--postprocessingScript                                   Path to Transcript_to_genome.R script
 	--bulkLevelScript                                        Path to Calculate_m6anet_bulk.R script
@@ -62,7 +63,7 @@ process minimap2 {
 	"""
 		mkdir -p ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/
 		minimap2 -x map-ont -k14 -t ${task.cpus} -a transcriptome.fa ${fastq} | samtools view -hSb | samtools sort -@ ${task.cpus} -o ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimapT.bam
-		samtools view ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimapT.bam -bh -F 2324 | samtools sort -@ ${task.cpus} -o ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam	
+		samtools view ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimapT.bam -bh -F 2324 -q ${params.min_mapq} | samtools sort -@ ${task.cpus} -o ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam	
 		samtools index -@ ${task.cpus} ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam
 		ln -s ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sort.bam ./minimap.filt.sortT.bam
 		ln -s ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sort.bam.bai ./minimap.filt.sortT.bam.bai
@@ -90,16 +91,16 @@ process nanopolish {
 		mkdir -p ${params.resultsDir}/${condition}/${sample}/nanopolish/
 		seqsum_file=\$(dirname ${fast5_dir})/sequencing_summary.txt
 
-        	if [[ -f "\$seqsum_file" ]]; then
+		if [[ -f "\$seqsum_file" ]]; then
 			f5c index -d ${fast5_dir} ${fastq} -s \$seqsum_file
 		else
 			f5c index -d ${fast5_dir} ${fastq}
-        	fi
-		f5c eventalign --rna -r ${fastq} -b ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam -g transcriptome.fa --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt -t ${task.cpus} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt
+		fi
+		f5c eventalign --rna -r ${fastq} -b ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam -g transcriptome.fa --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt -t ${task.cpus} --min-mapq ${params.min_mapq} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt
 	"""
 	else
 	"""
-        	echo "Skipped"
+		echo "Skipped"
 	"""
 }
 
@@ -111,7 +112,6 @@ process m6anet1 {
 
 	output:
 	tuple val(condition), val(sample) into m6anet1_m6anet2
-
 
     script:
 	if(params.m6anet1)
@@ -137,7 +137,7 @@ process m6anet2 {
 	tuple val(condition), val(sample) from m6anet1_m6anet2_grouped_by_condition
 
 	output:
-    	val(condition) into m6anet_postprocessing
+	val(condition) into m6anet_postprocessing
 	script:
 	if(params.m6anet2)
 	"""
