@@ -39,7 +39,7 @@ if (params.help) {
 // Input of transcriptome fasta.
 Channel
 	.fromPath(params.transcriptome_fasta, checkIfExists:true)
-	.into{transcriptome_fasta_minimap2;transcriptome_fasta_nanopolish}
+	.set{ reference_fasta_ch }
 
 // Input of sample names, conditions, FAST5s path and FASTQ.
 Channel
@@ -51,12 +51,11 @@ Channel
 // Transcriptome alignment.
 process minimap2 {
 	input:
-	tuple val(sample), val(condition), val(fast5_dir), val(fastq) from samples_minimap2
-
-	each file('transcriptome.fa') from transcriptome_fasta_minimap2
+	tuple val(sample), val(condition), val(fast5_dir), val(fastq)
+	each file('transcriptome.fa')
 		
 	output:
-	tuple val(sample), val(condition), val(fast5_dir), val(fastq) into minimap2_nanopolish
+	tuple val(sample), val(condition), val(fast5_dir), val(fastq)
 
     script:
     if(params.minimap2)
@@ -79,11 +78,11 @@ process minimap2 {
 // Resquigling with nanopolish for each condition
 process nanopolish {
 	input:
-	tuple val(sample), val(condition), val(fast5_dir), val(fastq) from minimap2_nanopolish
-	each file('transcriptome.fa') from transcriptome_fasta_nanopolish
+	tuple val(sample), val(condition), val(fast5_dir), val(fastq)
+	each file('transcriptome.fa')
 
 	output:
-	tuple val(condition), val(sample) into nanopolish_m6anet1
+	tuple val(condition), val(sample)
 
     script:
     if(params.nanopolish)
@@ -108,10 +107,10 @@ process nanopolish {
 // Data formatting for m6anet for each sample
 process m6anet1 {
 	input:
-	tuple val(condition), val(sample) from nanopolish_m6anet1
+	tuple val(condition), val(sample)
 
 	output:
-	tuple val(condition), val(sample) into m6anet1_m6anet2
+	tuple val(condition), val(sample)
 
     script:
 	if(params.m6anet1)
@@ -126,18 +125,13 @@ process m6anet1 {
 	"""
 }
 
-
-// From a single channel for all the alignments to one channel for each condition
-m6anet1_m6anet2.groupTuple(by:0)
-.set{ m6anet1_m6anet2_grouped_by_condition } 
-
 // RNA modifications detection with m6anet
 process m6anet2 {
 	input:
-	tuple val(condition), val(sample) from m6anet1_m6anet2_grouped_by_condition
+	tuple val(condition), val(sample)
 
 	output:
-	val(condition) into m6anet_postprocessing
+	val(condition)
 	script:
 	if(params.m6anet2)
 	"""
@@ -155,7 +149,7 @@ process m6anet2 {
 // Processing of each output to obtain bed files
 process postprocessing {
 	input:
-	val(condition) from m6anet_postprocessing
+	val(condition)
 
 	output:
 
@@ -181,4 +175,12 @@ process postprocessing {
 	"""
 		echo "Skipped"
 	"""
+}
+
+workflow {
+	minimap2(samples_minimap2, reference_fasta_ch)
+	nanopolish(minimap2.out, reference_fasta_ch)
+	m6anet1(nanopolish.out)
+	m6anet2(m6anet1.out.groupTuple(by:0))
+	postprocessing(m6anet2.out)
 }
