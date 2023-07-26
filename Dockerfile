@@ -22,19 +22,18 @@ RUN apt-get update  && \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-RUN conda install -c bioconda -c conda-forge hdf5plugin f5c minimap2 samtools python==3.8
+RUN conda install -c bioconda -c conda-forge f5c python=3.8 minimap2 samtools
+RUN /opt/conda/bin/python -m pip install --upgrade pip
+RUN /opt/conda/bin/python -m pip install Cython numpy
+RUN /opt/conda/bin/python -m pip install m6anet
+ENV PATH=/opt/conda/bin/:$PATH
+
+RUN git clone https://github.com/hasindu2008/f5c.git
+RUN /f5c/scripts/install-vbz.sh
+ENV HDF5_PLUGIN_PATH=/root/.local/hdf5/lib/plugin
+
 RUN R -e "install.packages('xml2')"
 RUN R -e "install.packages('BiocManager')"
 RUN R -e "BiocManager::install('IRanges')"  
 RUN R -e "BiocManager::install('GenomicRanges')" 
 RUN R -e "BiocManager::install('ensembldb')"
-
-ENV PATH=/opt/conda/bin/:$PATH
-
-RUN git clone https://github.com/hasindu2008/f5c.git
-RUN /f5c/scripts/install-vbz.sh
-ENV HDF5_PLUGIN_PATH=/root/.local/hdf5/lib/plugin 
-
-RUN git clone -b development https://github.com/GoekeLab/m6anet.git \
-&& cd m6anet \
-&& python setup.py install

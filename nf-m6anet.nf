@@ -24,6 +24,8 @@ def helpMessage() {
 	--gtf                                                    Path to genome annotation gtf file
 	--min_mapq                                               Minimum mapping quality
 	--prob_mod_thr                                           Probability modification threshold for calling a site as m6A+
+	--optArgs_f5c                                            Optional arguments for f5c, for example "--kmer-model /path/to/rna004.nucleotide.5mer.model"
+        --optArgs_m6anet                                         Optional arguments for m6Anet, for example "--pretrained_model HEK293T_RNA004" or "--pretrained_model arabidopsis_RNA002"
 	--postprocessingScript                                   Path to Transcript_to_genome.R script
 	--bulkLevelScript                                        Path to Calculate_m6anet_bulk.R script
 
@@ -95,14 +97,13 @@ process nanopolish {
 		else
 			f5c index -d ${fast5_dir} ${fastq}
 		fi
-		f5c eventalign --rna -r ${fastq} -b ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam -g transcriptome.fa --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt -t ${task.cpus} --min-mapq ${params.min_mapq} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt
+		f5c eventalign --rna -r ${fastq} -b ${params.resultsDir}/${condition}/${sample}/transcriptomeAlignment/minimap.filt.sortT.bam -g transcriptome.fa --signal-index --scale-events --summary ${params.resultsDir}/${condition}/${sample}/nanopolish/summary.txt -t ${task.cpus} --min-mapq ${params.min_mapq} ${params.optArgs_f5c} > ${params.resultsDir}/${condition}/${sample}/nanopolish/eventalign_readIndex.txt
 	"""
 	else
 	"""
 		echo "Skipped"
 	"""
 }
-
 
 // Data formatting for m6anet for each sample
 process m6anet1 {
@@ -137,7 +138,7 @@ process m6anet2 {
 	"""
 		mkdir -p ${params.resultsDir}/${condition}/m6anet
 		preprocessing_dirs=\$(find ${params.resultsDir}/${condition} -maxdepth 2 -mindepth 2 -type d | grep "m6anet\$")
-		m6anet inference --input_dir \$preprocessing_dirs --out_dir ${params.resultsDir}/${condition}/m6anet --n_processes ${task.cpus}
+		m6anet inference --input_dir \$preprocessing_dirs --out_dir ${params.resultsDir}/${condition}/m6anet --n_processes ${task.cpus} ${params.optArgs_m6anet}
 	"""
 	else
 	"""
