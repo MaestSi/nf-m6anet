@@ -41,6 +41,8 @@ Other mandatory arguments which may be specified in the nf-m6anet.conf file
 --gtf                                                    Path to genome annotation gtf file
 --min_mapq                                               Minimum mapping quality
 --prob_mod_thr                                           Probability modification threshold for calling a site as m6A+
+--optArgs_f5c                                            Optional arguments for f5c, for example "--kmer-model /path/to/rna004.nucleotide.5mer.model"
+--optArgs_m6anet                                         Optional arguments for m6Anet, for example "--pretrained_model HEK293T_RNA004" or "--pretrained_model arabidopsis_RNA002"
 --postprocessingScript                                   Path to Transcript_to_genome.R script
 --bulkLevelScript                                        Path to Calculate_m6anet_bulk.R script
 ```
